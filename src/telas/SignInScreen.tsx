@@ -1,3 +1,4 @@
+import { login } from '@/lib/api';
 import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -17,46 +18,83 @@ import { RootStackParamList } from '../app';
 import PrimaryButton from '../components/buttonPrimario/PrimaryButton';
 import { colors, radius } from '../theme';
 
+import { ActivityIndicator /* ...resto */ } from 'react-native';
+
 type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 export default function SignInScreen({ navigation }: Props) {
-  const [email, setEmail] = useState('Designer@gmail.com');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const onSignIn = () => {
-    // TODO: autenticação real
-    console.log({ email, password });
+  const onSignIn = async () => {
+    try {
+      setErrorMsg(null);
+      if (!email || !/^\S+@\S+\.\S+$/.test(email))
+        throw new Error('Informe um e-mail válido.');
+      if (!password || password.length < 6)
+        throw new Error('Senha mínima de 6 caracteres.');
+
+      console.log('🔵 Enviando login para o servidor...');
+      setLoading(true);
+
+      await login(email.trim(), password);
+
+      console.log('🟢 Servidor respondeu, login OK!');
+      navigation.replace('EscolhaPerf'); // sua rota pós-login
+    } catch (e: any) {
+      console.log('🔴 Erro:', e.message);
+      setErrorMsg(e.message ?? 'Erro ao entrar.');
+    } finally {
+      setLoading(false);
+    }
   };
-
   return (
     <SafeAreaView style={styles.safe}>
       {/* Decorações */}
-      <Image
-        source={require('../../assets/images/imagensLogin/image 22.png')}
-        style={[
-          styles.decoration,
-          { bottom: -40, right: -60, width: 260, height: 200 },
-        ]}
-      />
-      <Image
-        source={require('../../assets/images/imagensLogin/image 24.png')}
-        style={[styles.decoration, { top: 0, left: 20, width: 90, height: 90 }]}
-      />
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          bottom: -70,
+          width: '100%',
+          height: '10%',
+        }}
+      >
+        <Image
+          source={require('../../assets/images/imagensLogin/imgBolaTenisFundo.png')}
+          style={[
+            styles.decoration,
+            { width: '130%' }, // Usando porcentagem
+          ]}
+          resizeMode="contain"
+        />
+      </View>
 
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: 'padding', android: undefined })}
         style={{ flex: 1 }}
       >
-        <ScrollView
-          contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={{ alignItems: 'center', marginBottom: 10 }}>
+        <View style={styles.container}>
+          <View
+            style={{ alignItems: 'center', marginBottom: 10, marginTop: 20 }}
+          >
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={{ marginTop: 16 }}
+            >
+              <Image
+                source={require('../../assets/images/imagensLogin/imgmarcalogin.png')}
+                style={{ width: 120, height: 120, marginBottom: 6 }}
+              />
+            </Pressable>
             <Image
-              source={require('../../assets/images/imagensLogin/image 25.png')}
-              style={{ width: 70, height: 70, marginBottom: 6 }}
+              source={require('../../assets/images/imagensLogin/SnoutChat.png')}
+              style={{ width: 200, height: 55, marginBottom: 6 }}
             />
-            <Text style={styles.title}>SnoutChat</Text>
             <Text style={styles.subtitle}>
               Bem-vindo de volta Aumigo{'\n'}Sentimos sua falta…
             </Text>
@@ -68,6 +106,7 @@ export default function SignInScreen({ navigation }: Props) {
               value={email}
               onChangeText={setEmail}
               placeholder="email@exemplo.com"
+              placeholderTextColor={colors.textMuted}
               keyboardType="email-address"
               autoCapitalize="none"
               style={styles.input}
@@ -78,6 +117,7 @@ export default function SignInScreen({ navigation }: Props) {
               value={password}
               onChangeText={setPassword}
               placeholder="********"
+              placeholderTextColor={colors.textMuted}
               secureTextEntry
               style={styles.input}
             />
@@ -86,7 +126,7 @@ export default function SignInScreen({ navigation }: Props) {
           <PrimaryButton
             title="Entrar"
             onPress={onSignIn}
-            style={{ marginTop: 16, width: '100%' }}
+            style={{ marginTop: 16 }}
           />
 
           <Pressable
@@ -95,14 +135,7 @@ export default function SignInScreen({ navigation }: Props) {
           >
             <Text style={styles.linkMuted}>Cadastrar</Text>
           </Pressable>
-
-          <Pressable
-            onPress={() => navigation.goBack()}
-            style={{ marginTop: 16 }}
-          >
-            <Text style={styles.backLink}>← Voltar</Text>
-          </Pressable>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -111,7 +144,7 @@ export default function SignInScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.bgPeach,
+    backgroundColor: colors.creme,
   },
   container: {
     flexGrow: 1,
@@ -139,8 +172,8 @@ const styles = StyleSheet.create({
   label: {
     color: colors.textDark,
     marginLeft: 6,
-    marginBottom: 4,
-    fontWeight: '600',
+    marginBottom: -7,
+    fontWeight: '400',
   },
   input: {
     backgroundColor: colors.white,
