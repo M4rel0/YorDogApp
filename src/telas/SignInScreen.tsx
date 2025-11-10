@@ -133,7 +133,12 @@ export default function SignInScreen({ navigation }: Props) {
             onPress={() => console.log('Cadastrar')}
             style={{ marginTop: 10 }}
           >
-            <Text style={styles.linkMuted}>Cadastrar</Text>
+            <Text
+              onPress={() => navigation.navigate('Cadastro1')}
+              style={styles.linkMuted}
+            >
+              Cadastrar
+            </Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
