@@ -13,13 +13,12 @@ import {
   Image,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-
 import { RootStackParamList } from '../../app';
 import PrimaryButton from '../../components/buttonPrimario/PrimaryButton';
 import { colors, radius } from '../../theme';
 
 import { ActivityIndicator /* ...resto */ } from 'react-native';
-import ProfileImagePicker from './ProfileImagePicker';
+import ProfileImagePicker from '../../components/perfilimagempiker/ProfileImagePicker';
 
 export default function Cadastro2({
   navigation,
@@ -99,7 +98,7 @@ export default function Cadastro2({
           <View style={{ gap: 12, width: '100%' }}>
             <Text style={styles.label}>Nome de Usuário</Text>
             <TextInput
-              placeholder="Atila Rei Dos Unos.com"
+              placeholder="Atila Rei Dos Unos"
               placeholderTextColor={colors.textMuted}
               keyboardType="default"
               autoCapitalize="none"
@@ -124,7 +123,7 @@ export default function Cadastro2({
 
           <PrimaryButton
             title="Adicionar"
-            onPress={() => navigation.navigate('EscolhaPerf')}
+            onPress={() => navigation.navigate('Cadastro3')}
             style={{ marginTop: 5 }}
           />
         </View>
