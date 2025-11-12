@@ -24,18 +24,11 @@ import { ActivityIndicator } from 'react-native';
 import ProfileImagePicker from '../../components/perfilimagempiker/ProfileImagePicker';
 import { Input } from '@/components/input';
 
-export default function Cadastro4({
+export default function CadastroPost({
   navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Cadastro4'>) {
+}: NativeStackScreenProps<RootStackParamList, 'CadastroPost'>) {
   return (
     <SafeAreaView style={styles.safe}>
-      <View>
-        <Image
-          source={require('../../../assets/images/imagensCadastro/imgParte3.png')}
-          style={[styles.decoration, { width: '100%', marginTop: 5 }]}
-          resizeMode="contain"
-        />
-      </View>
       <View
         style={{
           flex: 1,
@@ -48,7 +41,7 @@ export default function Cadastro4({
         }}
       >
         <Image
-          source={require('../../../assets/images/imagensCadastro/imgcadastro6.png')}
+          source={require('../../../assets/images/imagensCadastro/imgcadastro8.png')}
           style={[
             styles.decoration,
             { width: '60%' },
@@ -58,7 +51,7 @@ export default function Cadastro4({
         />
 
         <Image
-          source={require('../../../assets/images/imagensCadastro/imgcadastro77.png')}
+          source={require('../../../assets/images/imagensCadastro/imgcadastro5.png')}
           style={[
             styles.decoration,
             { width: '63%' },
@@ -78,81 +71,47 @@ export default function Cadastro4({
               style={{
                 alignItems: 'center',
                 marginBottom: 10,
-                marginTop: 20,
+                marginTop: 0,
               }}
             >
-              <Image
-                source={require('../../../assets/images/imagensLogin/SnoutChat.png')}
-                style={{ width: 200, height: 55, marginBottom: 3 }}
-              />
               <Pressable
                 onPress={() => navigation.goBack()}
                 style={{ marginTop: 16 }}
               >
                 <Image
-                  source={require('../../../assets/images/imagensLogin/imgmarcalogin.png')}
-                  style={{ width: 120, height: 120, marginBottom: 6 }}
+                  source={require('../../../assets/images/imagensLogin/SnoutChat.png')}
+                  style={{ width: 200, height: 55, marginBottom: 3 }}
                 />
               </Pressable>
-              <Text style={styles.subtitle}>
-                <Text style={{ fontWeight: '600' }}>
-                  Faça seu cadastro de seu primeiro Dog! {'\n'}
-                </Text>
-                Audicione uma breve biografia sobre seu Dog
+              <Text
+                style={[
+                  styles.subtitle,
+                  { marginTop: 30, fontWeight: '600', fontSize: 17 },
+                ]}
+              >
+                Augora Faça seu primeiro post!
               </Text>
 
+              <Text style={[styles.subtitle, { marginTop: 10, fontSize: 17 }]}>
+                Capriche na primeira Foto
+              </Text>
               <View
                 style={{
                   width: '100%',
-                  alignItems: 'flex-start',
+
                   marginTop: 15,
                 }}
               >
-                <Text style={[styles.label]}>Bio</Text>
-                <TextInput
-                  placeholder="Sou o primeiro da minha família a ser macho..."
-                  placeholderTextColor={colors.textMuted}
-                  keyboardType="default"
-                  autoCapitalize="none"
-                  multiline={true} // ✅ Permite múltiplas linhas
-                  numberOfLines={5} // ✅ Altura inicial do campo
-                  textAlignVertical="top" // ✅ Garante alinhamento no topo
-                  style={[
-                    styles.input,
-                    {
-                      height: 150,
-                      padding: 10,
-                      fontSize: 16,
-                    },
-                  ]}
+                <ProfileImagePicker
+                  width={300}
+                  height={400}
+                  borderRadius={20}
                 />
               </View>
             </View>
-            <View
-              style={{
-                alignItems: 'center',
-                marginBottom: 10,
-                gap: 5,
-                width: '85%',
-              }}
-            >
-              <Text
-                style={[styles.subtitle, { fontSize: 16, fontWeight: '500' }]}
-              >
-                Que tal começar sua jornada com um post com uma Foto?
-              </Text>
-              <PrimaryButton
-                title="Vamos la!"
-                onPress={() => navigation.navigate('CadastroPost')}
-                style={{
-                  marginTop: 5,
-                  paddingHorizontal: 20,
-                  paddingVertical: 7,
-                }}
-              />
-            </View>
+
             <PrimaryButton
-              title="Finalizar Perfil"
+              title="Postar"
               onPress={() => router.replace('/(tabs)/appindex')}
               style={{ marginTop: 5 }}
             />

@@ -132,7 +132,7 @@ export default function Cadastro3({
 
           <PrimaryButton
             title="Adicionar"
-            onPress={() => navigation.navigate('EscolhaPerf')}
+            onPress={() => navigation.navigate('Cadastro4')}
             style={{ marginTop: 5 }}
           />
         </View>

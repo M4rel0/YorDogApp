@@ -118,7 +118,7 @@ export default function Cadastro2({
               Foto Perfil
             </Text>
 
-            <ProfileImagePicker />
+            <ProfileImagePicker width={170} height={170} borderRadius={100} />
           </View>
 
           <PrimaryButton
