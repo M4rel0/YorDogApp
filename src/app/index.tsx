@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import WelcomeScreen from '../telas/WelcomeScreen';
 import SignInScreen from '../telas/SignInScreen';
-import { EscolhaPerf } from '../telas/telaEscolhaPerf/EscolhaPerf';
+import EscolhaPerf from '../telas/telaEscolhaPerf/EscolhaPerf';
 import Cadastro1 from '../telas/telasCadastro/Cadastro1';
 import Cadastro2 from '../telas/telasCadastro/Cadastro2';
 import Cadastro3 from '../telas/telasCadastro/Cadastro3';

@@ -143,12 +143,15 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: 'center',
     color: colors.textMuted,
+    fontWeight: '400',
+    fontSize: 17,
   },
   label: {
     color: colors.textDark,
     marginLeft: 6,
     marginBottom: -7,
-    fontWeight: '400',
+    fontWeight: '600',
+    fontSize: 15,
   },
   input: {
     backgroundColor: colors.white,
