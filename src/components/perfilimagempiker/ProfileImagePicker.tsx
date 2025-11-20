@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -6,14 +6,25 @@ type ProfileImagePickerProps = {
   width?: number;
   height?: number;
   borderRadius?: number;
+  initialUri?: string; // opcional: imagem inicial
+  onImagePicked?: (uri: string) => void; // callback pra enviar pro pai
 };
 
 export default function ProfileImagePicker({
   width = 170,
   height = 170,
   borderRadius = 100,
+  initialUri,
+  onImagePicked,
 }: ProfileImagePickerProps) {
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(initialUri ?? null);
+
+  useEffect(() => {
+    // se a tela pai mudar a initialUri por algum motivo
+    if (initialUri) {
+      setImage(initialUri);
+    }
+  }, [initialUri]);
 
   async function pickImage() {
     const permissionResult =
@@ -35,7 +46,9 @@ export default function ProfileImagePicker({
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const uri = result.assets[0].uri;
+      setImage(uri);
+      onImagePicked?.(uri); // 👈 avisa a tela pai
     }
   }
 

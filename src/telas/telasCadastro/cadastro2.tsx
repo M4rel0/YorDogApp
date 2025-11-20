@@ -1,28 +1,40 @@
-import { login } from '@/lib/api';
 import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
   Pressable,
   Image,
+  Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../app';
 import PrimaryButton from '../../components/buttonPrimario/PrimaryButton';
-import { colors, radius } from '../../theme';
-
-import { ActivityIndicator /* ...resto */ } from 'react-native';
+import { colors } from '../../theme';
 import ProfileImagePicker from '../../components/perfilimagempiker/ProfileImagePicker';
 
-export default function Cadastro2({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Cadastro2'>) {
+type Props = NativeStackScreenProps<RootStackParamList, 'Cadastro2'>;
+
+export default function Cadastro2({ navigation }: Props) {
+  const [dogName, setDogName] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
+
+  function handleNext() {
+    if (!dogName) {
+      Alert.alert('Atenção', 'Informe o nome do Dog.');
+      return;
+    }
+
+    navigation.navigate('Cadastro3', {
+      dogName,
+      avatarUrl,
+    });
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <View>
@@ -90,7 +102,7 @@ export default function Cadastro2({
               />
             </Pressable>
             <Text style={styles.subtitle}>
-              Faça seu cadastro de seu primeiro Dog! {'\n'} Rápido ele quer
+              Faça seu cadastro de seu primeiro Dog! {'\n'} Rápido, ele quer
               brincar...
             </Text>
           </View>
@@ -103,6 +115,8 @@ export default function Cadastro2({
               keyboardType="default"
               autoCapitalize="none"
               style={styles.input}
+              value={dogName}
+              onChangeText={setDogName}
             />
             <Text
               style={[
@@ -118,12 +132,17 @@ export default function Cadastro2({
               Foto Perfil
             </Text>
 
-            <ProfileImagePicker width={170} height={170} borderRadius={100} />
+            <ProfileImagePicker
+              width={170}
+              height={170}
+              borderRadius={100}
+              onImagePicked={(uri) => setAvatarUrl(uri)}
+            />
           </View>
 
           <PrimaryButton
             title="Adicionar"
-            onPress={() => navigation.navigate('Cadastro3')}
+            onPress={handleNext}
             style={{ marginTop: 5 }}
           />
         </View>
@@ -149,12 +168,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     opacity: 0.95,
   },
-  title: {
-    fontSize: 42,
-    fontWeight: '700',
-    color: colors.textDark,
-    lineHeight: 46,
-  },
   subtitle: {
     marginTop: 6,
     textAlign: 'center',
@@ -178,15 +191,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
     marginHorizontal: 40,
-  },
-  linkMuted: {
-    color: colors.textMuted,
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-  },
-  backLink: {
-    color: colors.textDark,
-    textAlign: 'center',
-    fontWeight: '600',
   },
 });

@@ -1,31 +1,52 @@
-import { login } from '@/lib/api';
+import { register } from '@/lib/api';
 import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
   Pressable,
   Image,
+  Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '../../app';
 import PrimaryButton from '../../components/buttonPrimario/PrimaryButton';
-import { colors, radius } from '../../theme';
+import { colors } from '../../theme';
 
-import { ActivityIndicator /* ...resto */ } from 'react-native';
+type Props = NativeStackScreenProps<RootStackParamList, 'Cadastro1'>;
 
-export default function Cadastro1({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Cadastro1'>) {
+export default function Cadastro1({ navigation }: Props) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleCadastrar() {
+    try {
+      if (!email || !password) {
+        Alert.alert('Atenção', 'Preencha e-mail e senha.');
+        return;
+      }
+
+      setLoading(true);
+
+      await register(email.trim(), password);
+
+      // usuário registrado, agora segue para o fluxo do dog
+      navigation.navigate('Cadastro2');
+    } catch (e: any) {
+      Alert.alert('Erro no cadastro', e.message ?? 'Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
-      {/* Decorações */}
       <View
         style={{
           flex: 1,
@@ -87,13 +108,15 @@ export default function Cadastro1({
           </View>
 
           <View style={{ gap: 12, width: '100%' }}>
-            <Text style={styles.label}>email do tutor</Text>
+            <Text style={styles.label}>E-mail do tutor</Text>
             <TextInput
               placeholder="email@exemplo.com"
               placeholderTextColor={colors.textMuted}
               keyboardType="email-address"
               autoCapitalize="none"
               style={styles.input}
+              value={email}
+              onChangeText={setEmail}
             />
 
             <Text style={styles.label}>Senha</Text>
@@ -102,13 +125,16 @@ export default function Cadastro1({
               placeholderTextColor={colors.textMuted}
               secureTextEntry
               style={styles.input}
+              value={password}
+              onChangeText={setPassword}
             />
           </View>
 
           <PrimaryButton
-            title="Cadastrar"
-            onPress={() => navigation.navigate('Cadastro2')}
+            title={loading ? 'Cadastrando...' : 'Cadastrar'}
+            onPress={handleCadastrar}
             style={{ marginTop: 16 }}
+            disabled={loading}
           />
         </View>
       </KeyboardAvoidingView>
@@ -132,12 +158,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     resizeMode: 'contain',
     opacity: 0.95,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: '700',
-    color: colors.textDark,
-    lineHeight: 46,
   },
   subtitle: {
     marginTop: 6,
@@ -164,15 +184,5 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
-  },
-  linkMuted: {
-    color: colors.textMuted,
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-  },
-  backLink: {
-    color: colors.textDark,
-    textAlign: 'center',
-    fontWeight: '600',
   },
 });

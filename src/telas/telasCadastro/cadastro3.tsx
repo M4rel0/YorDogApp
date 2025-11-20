@@ -1,13 +1,10 @@
-import { login } from '@/lib/api';
 import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
   Pressable,
   Image,
@@ -15,15 +12,18 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../app';
 import PrimaryButton from '../../components/buttonPrimario/PrimaryButton';
-import { colors, radius } from '../../theme';
-
-import { ActivityIndicator } from 'react-native';
-import ProfileImagePicker from '../../components/perfilimagempiker/ProfileImagePicker';
+import { colors } from '../../theme';
 import { Input } from '@/components/input';
 
-export default function Cadastro3({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Cadastro3'>) {
+type Props = NativeStackScreenProps<RootStackParamList, 'Cadastro3'>;
+
+export default function Cadastro3({ navigation, route }: Props) {
+  const { dogName, avatarUrl } = route.params;
+
+  const [breed, setBreed] = useState('');
+  const [age, setAge] = useState('');
+  // os outros campos ainda podem existir só visualmente, se quiser
+
   return (
     <SafeAreaView style={styles.safe}>
       <View>
@@ -91,7 +91,7 @@ export default function Cadastro3({
               />
             </Pressable>
             <Text style={styles.subtitle}>
-              Continue seu cadastro de seu primeiro Dog! {'\n'} Adicione algumas
+              Continue seu cadastro do primeiro Dog! {'\n'} Adicione algumas
               curiosidades
             </Text>
           </View>
@@ -104,35 +104,93 @@ export default function Cadastro3({
               width: '90%',
             }}
           >
-            {[
-              { placeholder: 'Cusco', label: 'Raça' },
+            {/* Raça */}
+            <View style={{ width: '48%', marginBottom: 12 }}>
+              <Text style={styles.label}>Raça</Text>
+              <Input
+                placeholder="Cusco"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="default"
+                autoCapitalize="none"
+                style={styles.input}
+                value={breed}
+                onChangeText={setBreed}
+              />
+            </View>
 
-              { placeholder: 'Longa', label: 'Pelagem' },
+            {/* Pelagem (visual, ainda não salva) */}
+            <View style={{ width: '48%', marginBottom: 12 }}>
+              <Text style={styles.label}>Pelagem</Text>
+              <Input
+                placeholder="Longa"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="default"
+                autoCapitalize="none"
+                style={styles.input}
+              />
+            </View>
 
-              { placeholder: '4kg', label: 'Peso' },
+            {/* Peso */}
+            <View style={{ width: '48%', marginBottom: 12 }}>
+              <Text style={styles.label}>Peso</Text>
+              <Input
+                placeholder="4kg"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="default"
+                autoCapitalize="none"
+                style={styles.input}
+              />
+            </View>
 
-              { placeholder: 'Medio', label: 'Porte' },
+            {/* Porte */}
+            <View style={{ width: '48%', marginBottom: 12 }}>
+              <Text style={styles.label}>Porte</Text>
+              <Input
+                placeholder="Médio"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="default"
+                autoCapitalize="none"
+                style={styles.input}
+              />
+            </View>
 
-              { placeholder: '5', label: 'Idade' },
+            {/* Idade (ligada ao banco) */}
+            <View style={{ width: '48%', marginBottom: 12 }}>
+              <Text style={styles.label}>Idade</Text>
+              <Input
+                placeholder="5"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="numeric"
+                autoCapitalize="none"
+                style={styles.input}
+                value={age}
+                onChangeText={setAge}
+              />
+            </View>
 
-              { placeholder: 'Brabo', label: 'Comportamento' },
-            ].map((item, idx) => (
-              <View key={idx} style={{ width: '48%', marginBottom: 12 }}>
-                {item.label && <Text style={styles.label}>{item.label}</Text>}
-                <Input
-                  placeholder={item.placeholder}
-                  placeholderTextColor={colors.textMuted}
-                  keyboardType="default"
-                  autoCapitalize="none"
-                  style={styles.input}
-                />
-              </View>
-            ))}
+            {/* Comportamento */}
+            <View style={{ width: '48%', marginBottom: 12 }}>
+              <Text style={styles.label}>Comportamento</Text>
+              <Input
+                placeholder="Brabo"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="default"
+                autoCapitalize="none"
+                style={styles.input}
+              />
+            </View>
           </View>
 
           <PrimaryButton
             title="Adicionar"
-            onPress={() => navigation.navigate('Cadastro4')}
+            onPress={() =>
+              navigation.navigate('Cadastro4', {
+                dogName,
+                avatarUrl,
+                breed,
+                age,
+              })
+            }
             style={{ marginTop: 5 }}
           />
         </View>
@@ -158,12 +216,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     opacity: 0.95,
   },
-  title: {
-    fontSize: 42,
-    fontWeight: '700',
-    color: colors.textDark,
-    lineHeight: 46,
-  },
   subtitle: {
     marginTop: 6,
     textAlign: 'center',
@@ -186,15 +238,5 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
-  },
-  linkMuted: {
-    color: colors.textMuted,
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-  },
-  backLink: {
-    color: colors.textDark,
-    textAlign: 'center',
-    fontWeight: '600',
   },
 });

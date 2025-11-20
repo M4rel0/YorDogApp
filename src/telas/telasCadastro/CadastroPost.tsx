@@ -1,32 +1,63 @@
-import { login } from '@/lib/api';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
   Pressable,
   Image,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../app';
 import PrimaryButton from '../../components/buttonPrimario/PrimaryButton';
-import { colors, radius } from '../../theme';
-
-import { ActivityIndicator } from 'react-native';
+import { colors } from '../../theme';
 import ProfileImagePicker from '../../components/perfilimagempiker/ProfileImagePicker';
-import { Input } from '@/components/input';
+import { saveDogProfile } from '@/lib/api';
 
-export default function CadastroPost({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'CadastroPost'>) {
+type Props = NativeStackScreenProps<RootStackParamList, 'CadastroPost'>;
+
+export default function CadastroPost({ navigation, route }: Props) {
+  const { dogName, avatarUrl, breed, age, bio } = route.params;
+
+  const [postImage, setPostImage] = useState<string | undefined>(avatarUrl);
+  const [loading, setLoading] = useState(false);
+
+  async function handlePost() {
+    try {
+      if (!dogName) {
+        Alert.alert('Erro', 'Nome do dog não encontrado.');
+        return;
+      }
+
+      setLoading(true);
+
+      await saveDogProfile({
+        dogName,
+        breed: breed ?? null,
+        age: age ? Number(age) : null,
+        bio: bio ?? null,
+        gender: null,
+        avatarUrl: postImage ?? avatarUrl ?? null,
+      });
+
+      // aqui, depois você pode também criar a lógica de salvar o "post" em outra tabela
+      router.replace('/(tabs)/appindex');
+    } catch (e: any) {
+      Alert.alert(
+        'Erro ao salvar perfil/post',
+        e.message ?? 'Tente novamente.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <View
@@ -89,16 +120,15 @@ export default function CadastroPost({
                   { marginTop: 30, fontWeight: '600', fontSize: 17 },
                 ]}
               >
-                Augora Faça seu primeiro post!
+                Agora faça seu primeiro post!
               </Text>
 
               <Text style={[styles.subtitle, { marginTop: 10, fontSize: 17 }]}>
-                Capriche na primeira Foto
+                Capriche na primeira foto
               </Text>
               <View
                 style={{
                   width: '100%',
-
                   marginTop: 15,
                 }}
               >
@@ -106,14 +136,17 @@ export default function CadastroPost({
                   width={300}
                   height={400}
                   borderRadius={20}
+                  initialUri={avatarUrl}
+                  onImagePicked={(uri) => setPostImage(uri)}
                 />
               </View>
             </View>
 
             <PrimaryButton
-              title="Postar"
-              onPress={() => router.replace('/(tabs)/appindex')}
+              title={loading ? 'Postando...' : 'Postar'}
+              onPress={handlePost}
               style={{ marginTop: 5 }}
+              disabled={loading}
             />
           </View>
         </TouchableWithoutFeedback>
@@ -121,6 +154,7 @@ export default function CadastroPost({
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
@@ -138,43 +172,9 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     opacity: 0.95,
   },
-  title: {
-    fontSize: 42,
-    fontWeight: '700',
-    color: colors.textDark,
-    lineHeight: 46,
-  },
   subtitle: {
     marginTop: 6,
     textAlign: 'center',
     color: colors.textMuted,
-  },
-  label: {
-    color: colors.textDark,
-    marginLeft: 20,
-    marginBottom: 3,
-    fontWeight: '400',
-  },
-  input: {
-    backgroundColor: colors.white,
-    borderRadius: 30,
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-    color: colors.textDark,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
-  },
-  linkMuted: {
-    color: colors.textMuted,
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-  },
-  backLink: {
-    color: colors.textDark,
-    textAlign: 'center',
-    fontWeight: '600',
   },
 });

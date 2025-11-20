@@ -1,11 +1,9 @@
-import { login } from '@/lib/api';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -14,19 +12,58 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../app';
 import PrimaryButton from '../../components/buttonPrimario/PrimaryButton';
-import { colors, radius } from '../../theme';
+import { colors } from '../../theme';
+import { saveDogProfile } from '@/lib/api';
 
-import { ActivityIndicator } from 'react-native';
-import ProfileImagePicker from '../../components/perfilimagempiker/ProfileImagePicker';
-import { Input } from '@/components/input';
+type Props = NativeStackScreenProps<RootStackParamList, 'Cadastro4'>;
 
-export default function Cadastro4({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Cadastro4'>) {
+export default function Cadastro4({ navigation, route }: Props) {
+  const { dogName, avatarUrl, breed, age } = route.params;
+
+  const [bio, setBio] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleFinishWithoutPost() {
+    try {
+      if (!dogName) {
+        Alert.alert('Erro', 'Nome do dog não encontrado.');
+        return;
+      }
+
+      setLoading(true);
+
+      await saveDogProfile({
+        dogName,
+        breed: breed ?? null,
+        age: age ? Number(age) : null,
+        bio: bio || null,
+        gender: null,
+        avatarUrl: avatarUrl ?? null,
+      });
+
+      router.replace('/(tabs)/appindex');
+    } catch (e: any) {
+      Alert.alert('Erro ao salvar perfil', e.message ?? 'Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleGoToPost() {
+    navigation.navigate('CadastroPost', {
+      dogName,
+      avatarUrl,
+      breed,
+      age,
+      bio,
+    });
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <View>
@@ -96,9 +133,9 @@ export default function Cadastro4({
               </Pressable>
               <Text style={styles.subtitle}>
                 <Text style={{ fontWeight: '600' }}>
-                  Faça seu cadastro de seu primeiro Dog! {'\n'}
+                  Faça o cadastro do seu primeiro Dog! {'\n'}
                 </Text>
-                Audicione uma breve biografia sobre seu Dog
+                Adicione uma breve biografia sobre seu Dog
               </Text>
 
               <View
@@ -114,9 +151,9 @@ export default function Cadastro4({
                   placeholderTextColor={colors.textMuted}
                   keyboardType="default"
                   autoCapitalize="none"
-                  multiline={true} // ✅ Permite múltiplas linhas
-                  numberOfLines={5} // ✅ Altura inicial do campo
-                  textAlignVertical="top" // ✅ Garante alinhamento no topo
+                  multiline
+                  numberOfLines={5}
+                  textAlignVertical="top"
                   style={[
                     styles.input,
                     {
@@ -125,6 +162,8 @@ export default function Cadastro4({
                       fontSize: 16,
                     },
                   ]}
+                  value={bio}
+                  onChangeText={setBio}
                 />
               </View>
             </View>
@@ -139,11 +178,11 @@ export default function Cadastro4({
               <Text
                 style={[styles.subtitle, { fontSize: 16, fontWeight: '500' }]}
               >
-                Que tal começar sua jornada com um post com uma Foto?
+                Que tal começar sua jornada com um post com uma foto?
               </Text>
               <PrimaryButton
-                title="Vamos la!"
-                onPress={() => navigation.navigate('CadastroPost')}
+                title="Vamos lá!"
+                onPress={handleGoToPost}
                 style={{
                   marginTop: 5,
                   paddingHorizontal: 20,
@@ -152,9 +191,10 @@ export default function Cadastro4({
               />
             </View>
             <PrimaryButton
-              title="Finalizar Perfil"
-              onPress={() => router.replace('/(tabs)/appindex')}
+              title={loading ? 'Salvando...' : 'Finalizar Perfil'}
+              onPress={handleFinishWithoutPost}
               style={{ marginTop: 5 }}
+              disabled={loading}
             />
           </View>
         </TouchableWithoutFeedback>
@@ -162,6 +202,7 @@ export default function Cadastro4({
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
@@ -178,12 +219,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     resizeMode: 'contain',
     opacity: 0.95,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: '700',
-    color: colors.textDark,
-    lineHeight: 46,
   },
   subtitle: {
     marginTop: 6,
@@ -207,15 +242,5 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
-  },
-  linkMuted: {
-    color: colors.textMuted,
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-  },
-  backLink: {
-    color: colors.textDark,
-    textAlign: 'center',
-    fontWeight: '600',
   },
 });

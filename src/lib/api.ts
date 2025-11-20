@@ -24,6 +24,10 @@ async function request(path: string, options: RequestInit = {}) {
   return data;
 }
 
+/* ===========================================
+   LOGIN / REGISTRO
+=========================================== */
+
 export async function login(email: string, password: string) {
   const data = await request('/auth/login', {
     method: 'POST',
@@ -46,4 +50,65 @@ export async function register(email: string, password: string, name?: string) {
 
 export async function logout() {
   await AsyncStorage.multiRemove(['token', 'user']);
+}
+
+export async function getStoredUser() {
+  const data = await AsyncStorage.getItem('user');
+  return data ? JSON.parse(data) : null;
+}
+
+/* ===========================================
+   PERFIL DO CACHORRO
+=========================================== */
+
+export type DogProfile = {
+  id?: number;
+  userId: number;
+  dogName: string;
+  breed?: string | null;
+  age?: number | null;
+  bio?: string | null;
+  gender?: 'M' | 'F' | null;
+  avatarUrl?: string | null;
+};
+
+/**
+ * Salvar / Atualizar o perfil do cachorro
+ */
+export async function saveDogProfile(profile: Omit<DogProfile, 'userId'>) {
+  const user = await getStoredUser();
+  if (!user) {
+    throw new Error('Usuário não encontrado no dispositivo');
+  }
+
+  const body = {
+    ...profile,
+    userId: user.id,
+  };
+
+  const data = await request('/profiles', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+
+  return data as DogProfile;
+}
+
+/**
+ * Buscar o perfil do cachorro do usuário logado
+ */
+export async function getMyDogProfile(): Promise<DogProfile | null> {
+  const user = await getStoredUser();
+  if (!user) throw new Error('Usuário não encontrado no dispositivo');
+
+  try {
+    const data = await request(`/profiles/${user.id}`, {
+      method: 'GET',
+    });
+
+    return data as DogProfile;
+  } catch (e: any) {
+    if (e.message?.includes('Perfil não encontrado')) return null;
+    throw e;
+  }
 }

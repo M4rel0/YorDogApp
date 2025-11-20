@@ -16,9 +16,23 @@ export type RootStackParamList = {
   EscolhaPerf: undefined;
   Cadastro1: undefined;
   Cadastro2: undefined;
-  Cadastro3: undefined;
-  Cadastro4: undefined;
-  CadastroPost: undefined;
+  Cadastro3: {
+    dogName: string;
+    avatarUrl?: string;
+  };
+  Cadastro4: {
+    dogName: string;
+    avatarUrl?: string;
+    breed?: string;
+    age?: string;
+  };
+  CadastroPost: {
+    dogName: string;
+    avatarUrl?: string;
+    breed?: string;
+    age?: string;
+    bio?: string;
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
